@@ -1,94 +1,9 @@
-#include <iostream>
-using namespace std;
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "math.h"
-#include "assert.h"
-
-//typedefs
-typedef int int32;
-typedef short int16;
-typedef char int8;
-typedef unsigned int uint32;
-typedef unsigned short uint16;
-typedef unsigned char uint8;
-typedef unsigned char uchar;
-
-
-
-class BigInt {
-public:
-	// > static class members:
-	static uint16 baseOutput; //base using for output (10 by default)
-private:
-	// > members:
-	uint16* x;
-	uint16 len;
-	bool neg;
-
-public:
-	// > ctors:
-	BigInt();
-	BigInt(const BigInt& b); //copy ctor
-	BigInt(const char* str, uint16 base = 0);
-	BigInt(uint16 n);
-	BigInt(uint32 n);
-	BigInt(int16 n);
-	BigInt(int32 n);
-	
-	// > destructor:
-	~BigInt();
-	
-	// > getters, setters:
-	bool isNegative();
-	void setNegative(bool _neg);
-	
-	// > methods:
-	void copy(const BigInt& b); //copy
-	void no_zeros(); //сократить нули
-	// сравнение:
-private:
-	static int cmp(const uint16* a, uint16 a_len, const uint16* b, uint16 b_len);
-public:
-	static int cmp_abs(const BigInt& a, const BigInt& b);
-	static int cmp_sign(const BigInt& a, const BigInt& b);
-	bool is_zero() const;
-	// арифм. операции + - * / %
-	static BigInt add(const BigInt& a, const BigInt& b, bool sub_xor = false);
-	static BigInt sub(const BigInt& a_, const BigInt& b_, bool sum_xor = false);
-	void sub(const BigInt& b);
-	static BigInt mul(const BigInt& a, uint16 b);
-	static BigInt mul(const BigInt& a, const BigInt& b);
-	static BigInt div(const BigInt& a, uint16 b, uint16* rest_out);
-	static uint16 mod(const BigInt& a, uint16 b);
-	static BigInt div(const BigInt& a, const BigInt& b, BigInt** rest_out, bool mod = false);
-	static BigInt mod(const BigInt& a, const BigInt& b);
-	// from/to string
-	void fromString(const char* str, uint16 base = 0);
-	char* toString(char** strToDelete = NULL, uint16 base = 0, bool with_prefix = true, bool with_sign = true, bool big = true) const;
-	
-	// > operators:
-	BigInt& operator=(const BigInt& b); //операция присваивания - копированием
-	friend BigInt operator+(const BigInt& a, const BigInt& b);
-	friend BigInt operator-(const BigInt& a, const BigInt& b);
-	friend BigInt operator*(const BigInt& a, const BigInt& b);
-	friend BigInt operator/(const BigInt& a, const BigInt& b);
-	friend BigInt operator%(const BigInt& a, const BigInt& b);
-	friend bool operator==(const BigInt& a, const BigInt& b);
-	friend bool operator!=(const BigInt& a, const BigInt& b);
-	friend bool operator>(const BigInt& a, const BigInt& b);
-	friend bool operator<(const BigInt& a, const BigInt& b);
-	friend bool operator>=(const BigInt& a, const BigInt& b);
-	friend bool operator<=(const BigInt& a, const BigInt& b);
-	friend istream& operator>>(istream& _in, BigInt& a);
-	friend ostream& operator<<(ostream& _out, const BigInt& a);
-};
-
+/**
+ * @class BigInt
+ */
 uint16 BigInt::baseOutput = 10; //default base for output
 
-
-/*
+/**
  * ctors
  */
 BigInt::BigInt()
@@ -159,7 +74,7 @@ BigInt::BigInt(int32 n) {
 	this->no_zeros();
 }
 
-/*
+/**
  * ~
  */
 BigInt::~BigInt()
@@ -167,7 +82,7 @@ BigInt::~BigInt()
 	delete x;
 }
 
-/*
+/**
  * neg: get(), set()
  */
 bool BigInt::isNegative()
@@ -179,7 +94,7 @@ void BigInt::setNegative(bool _neg)
 	this->neg = _neg;
 }
 
-/*
+/**
  * base compare function, for arrays of uint16
  */
 int BigInt::cmp(const uint16* a, uint16 a_len, const uint16* b, uint16 b_len)
@@ -192,7 +107,7 @@ int BigInt::cmp(const uint16* a, uint16 a_len, const uint16* b, uint16 b_len)
 	return 0;
 }
 
-/*
+/**
  * compare |a| <=> |b|
  */
 int BigInt::cmp_abs(const BigInt& a, const BigInt& b)
@@ -200,7 +115,7 @@ int BigInt::cmp_abs(const BigInt& a, const BigInt& b)
 	return BigInt::cmp(a.x, a.len, b.x, b.len);
 }
 
-/*
+/**
  * compare a <=> b, sign matters!
  */
 int BigInt::cmp_sign(const BigInt& a, const BigInt& b)
@@ -211,7 +126,7 @@ int BigInt::cmp_sign(const BigInt& a, const BigInt& b)
 		return BigInt::cmp(a.x, a.len, b.x, b.len) * (a.neg ? -1 : 1);
 }
 
-/*
+/**
  * == 0
  */
 bool BigInt::is_zero() const
@@ -222,7 +137,7 @@ bool BigInt::is_zero() const
 	return true;
 }
 
-/*
+/**
  * сократить нули
  */
 void BigInt::no_zeros()
@@ -235,7 +150,7 @@ void BigInt::no_zeros()
 	}
 }
 
-/*
+/**
  * a + b
  *
  * sub_xor - если вызов сделан из sub() для a и b разных знаков: a - (-b) = a + b  или  -a - b = - (a + b)
@@ -259,7 +174,7 @@ BigInt BigInt::add(const BigInt& a, const BigInt& b, bool sub_xor/* = false*/)
 	return c;
 }
 
-/*
+/**
  * a - b
  *
  * sum_xor - если вызов сделан из sum() для a и b разных знаков: a + (-b) = a - b  или  -a + b = b - a
@@ -305,7 +220,7 @@ BigInt BigInt::sub(const BigInt& a_, const BigInt& b_, bool sum_xor/* = false*/)
 	return c;
 }
 
-/*
+/**
  * a - b (result to a)
  */
 void BigInt::sub(const BigInt& b)
@@ -335,7 +250,7 @@ void BigInt::sub(const BigInt& b)
 	this->no_zeros(); //сократим нули
 }
 
-/*
+/**
  * a * b, b - 16 bit
  */
 BigInt BigInt::mul(const BigInt& a, uint16 b)
@@ -355,7 +270,7 @@ BigInt BigInt::mul(const BigInt& a, uint16 b)
 	return c;
 }
 
-/*
+/**
  * a * b
  */
 BigInt BigInt::mul(const BigInt& a, const BigInt& b)
@@ -384,7 +299,7 @@ BigInt BigInt::mul(const BigInt& a, const BigInt& b)
 	return c;
 }
 
-/*
+/**
  * a / b, b - 16 bit
  */
 BigInt BigInt::div(const BigInt& a, uint16 b, uint16* rest_out)
@@ -411,7 +326,7 @@ BigInt BigInt::div(const BigInt& a, uint16 b, uint16* rest_out)
 	return c;
 }
 
-/*
+/**
  * a % b, b - 2 bytes
  */
 uint16 BigInt::mod(const BigInt& a, uint16 b)
@@ -426,7 +341,7 @@ uint16 BigInt::mod(const BigInt& a, uint16 b)
 	return rest;
 }
 
-/*
+/**
  * a / b
  */
 BigInt BigInt::div(const BigInt& a, const BigInt& b, BigInt** rest_out, bool mod/* = false*/)
@@ -500,7 +415,7 @@ BigInt BigInt::div(const BigInt& a, const BigInt& b, BigInt** rest_out, bool mod
 	return (mod ? *rest_ptr : c);
 }
 
-/*
+/**
  * a % b
  */
 BigInt BigInt::mod(const BigInt& a, const BigInt& b)
@@ -508,7 +423,7 @@ BigInt BigInt::mod(const BigInt& a, const BigInt& b)
 	return BigInt::div(a, b, NULL, true);
 }
 
-/*
+/**
  * from string (only 8-, 10-, 16-based)
  */
 void BigInt::fromString(const char* str, uint16 base/* = 0*/)
@@ -608,7 +523,7 @@ void BigInt::fromString(const char* str, uint16 base/* = 0*/)
 	this->no_zeros(); //сократим нули
 }
 
-/*
+/**
  * to string
  */
 char* BigInt::toString(char** strToDelete/* = NULL*/, uint16 base/* = 0*/, bool with_prefix/* = true*/, bool with_sign/* = true*/, bool big/* = true*/) const
@@ -649,7 +564,7 @@ char* BigInt::toString(char** strToDelete/* = NULL*/, uint16 base/* = 0*/, bool 
 	return (str + j);
 }
 
-/*
+/**
  * operators
  */
 BigInt& BigInt::operator=(const BigInt& b) {
@@ -709,63 +624,4 @@ ostream& operator<<(ostream& _out, const BigInt& a)
 	delete strfull;
 	return _out;
 }
-
-
-
-
-
-//------------------------------------  MAIN: TESTS  ----------------------------------------
-
-
-int main()
-{
-	BigInt a("6532764532547857900675090904854854850854673"), b("32362548628636543646545353");
-	cout <<"a = " <<a <<endl;
-	cout <<"b = " <<b <<endl;
-	cout <<"add = " <<(a + b) <<endl;
-	cout <<"sub = " <<(a - b) <<endl;
-	cout <<"mul = " <<(a * b) <<endl;
-	cout <<"div = " <<(a / b) <<endl;
-	cout <<"mod = " <<(a % b) <<endl;
-	return 0;
-}
-
-
-/*
-
-*** TESTS RESULTS ***
-a = 6532764532547857900675090904854854850854673
-b = 32362548628636543646545353
-add = 6532764532547857933037639533491398497400026
-sub = 6532764532547857868312542276218311204309320
-mul = 211416909864012129805401785310389961568330653581337773425035906484569
-div = 201861868405729692
-mod = 19688186967898047914133397
-
-
-*** SAME TESTS ON PHP's BC MATH ***
-<?php
-	$a = "6532764532547857900675090904854854850854673";
-	$b = "32362548628636543646545353";
-	echo "a = " . $a . "<br/>";
-	echo "b = " . $b . "<br/>";
-	echo "add = " . bcadd($a, $b) . "<br/>";
-	echo "sub = " . bcsub($a, $b) . "<br/>";
-	echo "mul = " . bcmul($a, $b) . "<br/>";
-	echo "div = " . bcdiv($a, $b) . "<br/>";
-	echo "mod = " . bcmod($a, $b) . "<br/>";
-?>
-
->>> OUTPUT:
-a = 6532764532547857900675090904854854850854673
-b = 32362548628636543646545353
-add = 6532764532547857933037639533491398497400026
-sub = 6532764532547857868312542276218311204309320
-mul = 211416909864012129805401785310389961568330653581337773425035906484569
-div = 201861868405729692
-mod = 19688186967898047914133397
-	
-	
-*/
-
 
