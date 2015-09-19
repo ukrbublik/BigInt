@@ -1,10 +1,12 @@
 #include <iostream>
-using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "math.h"
-#include "assert.h"
+#include <math.h>
+#include <assert.h>
+#include <algorithm>
+
+using namespace std;
 
 /**
  * typedefs

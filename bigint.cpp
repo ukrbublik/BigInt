@@ -1,3 +1,5 @@
+#include "bigint.h"
+
 /**
  * @class BigInt
  */
@@ -36,8 +38,8 @@ BigInt::BigInt(const BigInt& b)
 }
 	
 BigInt::BigInt(const char* str, uint16 base/* = 0*/)
+	: BigInt()
 {
-	BigInt();
 	this->fromString(str, base);
 }
 
